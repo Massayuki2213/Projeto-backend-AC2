@@ -1,4 +1,4 @@
-const UserModel = require("../models/user")
+const User = require('../models/User')
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const express = require('express')
@@ -9,7 +9,7 @@ loginController.post("/", async (req, res) => {
 
     const { email, senha } = req.body
 
-    var user = await UserModel.findOne({email: email})
+    var user = await User.findOne({email: email})
     if(!user) {
         return res.status(400).json({mensagem: "Usuário não encontrado"})
     }

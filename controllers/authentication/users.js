@@ -1,10 +1,9 @@
 const bcryptjs = require("bcryptjs");
 const auth = require("../../middlewares/authentication"); // middleware para rotas autenticadas
-const UserModel = require("../../models/User");
+const User = require("../../models/User");
 const express = require("express");
-const user = express.Router();
+const users = express.Router();
 const { v4: uuidv4 } = require('uuid');
-
 
 // Conversor
 const funcoes = {
@@ -17,10 +16,10 @@ const funcoes = {
 // Rotas não autenticadas:
 
 // Rota para criar um novo usuario/cliente
-user.post("/cadastroUsuarioNaoAutenticada", async (req, res) => {
+users.post("/cadastro", async (req, res) => {
     const { nome, email, senha } = req.body;
-  
-    const usuarioExistente = await UserModel.findOne({
+
+    const usuarioExistente = await User.findOne({
       $or: [{ nome: nome }, { email: email }],
     });
     if (usuarioExistente) {
@@ -28,18 +27,18 @@ user.post("/cadastroUsuarioNaoAutenticada", async (req, res) => {
         mensagem: "Nome de usuário ou email já existe!",
       });
     }
-  
+
     const senhaEncrypt = await bcryptjs.hash(senha, 10);
-    var user = {
-      id: uuidv4(),  
+    var newUser = {
+      id: uuidv4(),
       nome: nome,
       email: email,
       senha: senhaEncrypt,
       funcao: null,
     };
-  
+
     try {
-      await UserModel.create(user);
+      await User.create(newUser);
       return res.status(201).json({
         mensagem: "Usuário criado com sucesso!",
       });
@@ -48,16 +47,15 @@ user.post("/cadastroUsuarioNaoAutenticada", async (req, res) => {
         error: error,
       });
     }
-  });
-
+});
 
 // Rotas autenticadas:
 
 // Rota para obter todos os usuario
-user.get("/listarUsuarios", auth, async (req, res) => {
+users.get("/users", auth, async (req, res) => {
   try {
-    let usuarios = await UserModel.find();
-    return res.status(200).json(usuarios);
+    let users = await User.find();
+    return res.status(200).json(users);
   } catch (err) {
     console.log(`Erro ao buscar usuários. ${err}`);
     return res.status(500).json({ error: err });
@@ -65,9 +63,9 @@ user.get("/listarUsuarios", auth, async (req, res) => {
 });
 
 // Rota para obter user por funcao
-user.get("/usuariosPorFuncao", auth, async (req, res) => {
+users.get("/usuariosPorFuncao", auth, async (req, res) => {
   try {
-    const usuariosPorFuncao = await UserModel.aggregate([
+    const usuariosPorFuncao = await User.aggregate([
       {
         $group: {
           _id: "$funcao",
@@ -76,7 +74,7 @@ user.get("/usuariosPorFuncao", auth, async (req, res) => {
       },
     ]);
 
-    const totalUsuarios = await UserModel.countDocuments();
+    const totalUsuarios = await User.countDocuments();
 
     return res.status(200).json({ usuariosPorFuncao, totalUsuarios });
   } catch (error) {
@@ -86,11 +84,11 @@ user.get("/usuariosPorFuncao", auth, async (req, res) => {
 });
 
 // Rota para obter um user pelo email
-user.get("/:email", auth, async (req, res) => {
+users.get("/:email", auth, async (req, res) => {
   var email = req.params.email;
 
   try {
-    let user = await UserModel.findOne({ email: email });
+    let user = await User.findOne({ email: email });
     if (!user) {
       return res
         .status(404)
@@ -104,18 +102,17 @@ user.get("/:email", auth, async (req, res) => {
   }
 });
 
-user.delete("/:idUser", auth, async (req, res) => {
+users.delete("/:idUser", auth, async (req, res) => {
   const idUser = req.params.idUser; // Captura o idUser
   try {
-  
-    const user = await UserModel.findOne({ idUser: idUser });
+    const user = await User.findOne({ idUser: idUser });
 
     if (!user) {
       return res.status(404).json({ mensagem: "Usuário não encontrado" });
     }
-   
-    await UserModel.findOneAndDelete({ idUser: idUser });
-    
+
+    await User.findOneAndDelete({ idUser: idUser });
+
     return res.status(200).json({ mensagem: "Usuário deletado com sucesso" });
   } catch (err) {
     console.error(`Um erro ocorreu ao deletar o usuário. ${err}`);
@@ -123,23 +120,11 @@ user.delete("/:idUser", auth, async (req, res) => {
   }
 });
 
-
-
 // Rota autenticada para cadastro de usuários
-user.post("/cadastroUsuarioAutenticada", auth, async (req, res) => {
-  const { nome, email, senha, funcao } = req.body;
+users.post("/cadastroUsuario", auth, async (req, res) => {
+    const { nome, email, senha, funcao } = req.body;
 
-  try {
-    let idUser = generateId();
-    let userExistente = await UserModel.findOne({ idUser: idUser });
-
-    // Verificar se o idUser já existe e tentar novamente até encontrar um único
-    while (userExistente) {
-      idUser = generateId();
-      userExistente = await UserModel.findOne({ idUser: idUser });
-    }
-
-    const usuarioExistente = await UserModel.findOne({
+    const usuarioExistente = await User.findOne({
       $or: [{ nome: nome }, { email: email }],
     });
     if (usuarioExistente) {
@@ -149,7 +134,7 @@ user.post("/cadastroUsuarioAutenticada", auth, async (req, res) => {
     }
 
     const senhaEncrypt = await bcryptjs.hash(senha, 10);
-    const funcaoNome = funcoes[funcao];
+    const funcaoNome = funcoes[funcao]; // Obtém o nome da funcao com base no number recebido
 
     if (!funcaoNome) {
       return res.status(400).json({
@@ -157,34 +142,34 @@ user.post("/cadastroUsuarioAutenticada", auth, async (req, res) => {
       });
     }
 
-    const user = {
-      idUser: idUser,
+    const newUser = {
+      id: uuidv4(),
       nome: nome,
       email: email,
       senha: senhaEncrypt,
       funcao: funcaoNome,
     };
 
-    await UserModel.create(user);
-    return res.status(201).json({
-      mensagem: "Usuário criado com sucesso!",
-    });
-  } catch (error) {
-    return res.status(500).json({
-      error: error,
-    });
-  }
+    try {
+      await User.create(newUser);
+      return res.status(201).json({
+        mensagem: "Usuário criado com sucesso!",
+      });
+    } catch (error) {
+      return res.status(500).json({
+        error: error,
+      });
+    }
 });
 
-
 // Rota para editar usuario:
-user.put("/editarUsuario/:email", auth, async (req, res) => {
+users.put("/editarUsuario/:email", auth, async (req, res) => {
   const userEmail = req.params.email;
   const { nome, email, senha, funcao } = req.body;
 
   try {
     // Verifica se o usuário existe através do email
-    const user = await UserModel.findOne({ email: userEmail });
+    const user = await User.findOne({ email: userEmail });
     if (!user) {
       return res.status(404).json({ mensagem: "Usuário não encontrado" });
     }
@@ -214,4 +199,4 @@ user.put("/editarUsuario/:email", auth, async (req, res) => {
   }
 });
 
-module.exports = user;
+module.exports = users;
