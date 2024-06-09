@@ -1,0 +1,39 @@
+<div class="container">
+    <div class="card mx-auto" style="background-color: rgb(33, 37, 41); color: rgb(255, 255, 255); margin: 0;">
+      <div class="card-body">
+        <h4 class="class-title text-center form-label">Adicionar usuário</h4>
+        <form (ngSubmit)="submitForm()" #formulario="ngForm">
+          <div class="mb-4">
+            <label for="nome" class="form-label mb-3 required">Nome</label>
+            <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite seu nome..." required
+              [(ngModel)]="usuario.nome">
+          </div>
+          <div class="mb-4">
+            <label for="email" class="form-label mb-3 required">E-mail</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="Digite seu e-mail..." required
+              [(ngModel)]="usuario.email">
+          </div>
+          <div class="mb-4">
+            <label for="cargo" class="form-label required mb-3">Cargo</label>
+            <select id="cargo" name="cargo" class="form-select" required [(ngModel)]="usuario.cargo">
+              <option value="" disabled selected hidden>Selecione o cargo</option>
+              <option value="engenheiro_FE">Engenheiro de FE</option>
+              <option value="engenheiro_BE">Engenheiro de BE</option>
+              <option value="analista_dados">Analista de dados</option>
+              <option value="lider_tecnico">Líder Técnico</option>
+            </select>
+          </div>
+  
+          <div class="mb-4">
+            <label for="senha" class="form-label mb-3 required">Senha</label>
+            <input type="password" class="form-control" id="senha" name="senha" placeholder="Digite sua senha..." required maxlength="15"
+              [(ngModel)]="usuario.senha" (ngModelChange)="checkSenha()">
+            <div *ngIf="senhaInvalida" style="color: red;">A senha deve conter entre 6 e 15 caracteres.</div>
+          </div>
+  
+          <button type="submit" id="botao-enviar" class="btn btn-outline-success btn-lg px-5" [disabled]="!formulario.valid || senhaInvalida">Salvar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  

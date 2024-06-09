@@ -1,0 +1,68 @@
+<div class="container">
+  <div class="cls-limit-table">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title text-center">Usuários</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th class="coluna-tabela">Nome</th>
+                <th class="coluna-tabela">E-mail</th>
+                <th class="coluna-tabela">Função</th>
+                <th class="coluna-tabela">Senha</th>
+                <th class="text-center coluna-tabela">Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of user">
+                <td>
+                  <div class="nome" *ngIf="user.nome">
+                    <span>{{ user.nome }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="email" *ngIf="user.email">
+                    <span>{{ user.email }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="funcao" *ngIf="user.funcao">
+                    <span>{{ user.funcao }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="senha" *ngIf="user.senha">
+                    <span>{{ user.senha }}</span>
+                  </div>
+                </td>
+                <td class="text-center">
+                  <button
+                    class="btn btn-warning btn-acao"
+                    (click)="editarUsuario(user)"
+                  >
+                    <i class="bi bi-pencil-fill text-white"></i>
+                  </button>
+                  <button
+                    class="btn btn-danger btn-acao"
+                    id="deletarUsuario"
+                    (click)="deletarUsuario(user)"
+                  >
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex justify-content-center mt-3 mb-3">
+    <button class="btn btn-success" id="nova-tarefa" routerLink="/app/addUser">
+      Novo Usuário <i class="bi bi-plus-circle"></i>
+    </button>
+  </div>
+</div>

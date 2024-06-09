@@ -1,0 +1,134 @@
+<div class="container">
+  <div class="cls-limit-table">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title text-center">Tarefas</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col" class="coluna-tabela">#</th>
+                <th scope="col" class="coluna-tabela">Descrição</th>
+                <th scope="col" class="coluna-tabela">Status</th>
+                <th scope="col" class="coluna-tabela text-center">Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let task of tasks"
+                [ngClass]="{
+                  'table-warning': task.status === 'Em andamento',
+                  'table-success': task.status === 'Concluído',
+                  'cor-preta':
+                    task.status === 'Em andamento' ||
+                    task.status === 'Concluído'
+                }"
+              >
+                <td
+                  [ngClass]="{
+                    'cor-preta':
+                      task.status === 'Em andamento' ||
+                      task.status === 'Concluído'
+                  }"
+                >
+                  <input
+                    [(ngModel)]="task.id"
+                    type="status"
+                    class="invisible-color"
+                    [disabled]="!task.editing || task.editing"
+                  />
+                </td>
+                <!-- Adicionando a célula do ID -->
+                <td
+                  [ngClass]="{
+                    'cor-preta':
+                      task.status === 'Em andamento' ||
+                      task.status === 'Concluído'
+                  }"
+                >
+                  <input
+                    [(ngModel)]="task.description"
+                    class="form-control"
+                    [ngClass]="{
+                      'invisible-color': !task.editing,
+                      'visible-color': task.editing
+                    }"
+                    [disabled]="!task.editing"
+                    required
+                  />
+                </td>
+                <td
+                  [ngClass]="{
+                    'cor-preta':
+                      task.status === 'Em andamento' ||
+                      task.status === 'Concluído'
+                  }"
+                >
+                  <input
+                    [(ngModel)]="task.status"
+                    type="status"
+                    class="invisible-color"
+                    [disabled]="!task.editing || task.editing"
+                  />
+                </td>
+                <td class="text-center">
+                  <button
+                    class="btn btn-acao"
+                    style="margin-right: 10px"
+                    [ngClass]="{
+                      'btn-primary': task.status === 'Não iniciado',
+                      'btn-success': task.status === 'Em andamento',
+                      'botao-laranja': task.status === 'Concluído'
+                    }"
+                    (click)="botaoConcluir(task)"
+                    [disabled]="task.editing"
+                  >
+                    {{
+                      task.status === "Não iniciado"
+                        ? "Iniciar"
+                        : task.status === "Em andamento"
+                        ? "Concluir"
+                        : "Restaurar"
+                    }}
+                  </button>
+                  <button
+                    class="btn btn-acao"
+                    style="margin-right: 10px"
+                    [class.btn-warning]="!task.editing"
+                    [class.btn-success]="task.editing"
+                    (click)="editarTarefa(task)"
+                  >
+                    {{ task.editing ? "Salvar" : "" }}
+                    <i
+                      class="bi bi-pencil-fill text-white"
+                      *ngIf="!task.editing"
+                    ></i>
+                  </button>
+                  <button
+                    class="btn btn-danger btn-acao"
+                    (click)="deletarTarefa(task)"
+                  >
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-center mt-3 mb-3">
+    <button
+      class="btn btn-success"
+      id="nova-tarefa"
+      (click)="incluirTarefa()"
+      [disabled]="!podeIncluirTarefa()"
+    >
+      Nova Tarefa <i class="bi bi-plus-circle"></i>
+    </button>
+  </div>
+</div>

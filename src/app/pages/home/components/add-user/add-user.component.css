@@ -1,0 +1,41 @@
+.container{
+    width: 100%;
+  }
+  
+  .card{
+      width: 500px;
+      margin: 0 auto;
+      border-radius: 10px;
+      padding: 30px;
+  }
+  
+  .card-body {
+      padding: 2px;
+    }
+    
+    .card-title {
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+    }
+    
+    .form-label {
+      font-weight: bold;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    
+  
+    
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+  
+    #botao-enviar{
+      width: 100%;
+    }

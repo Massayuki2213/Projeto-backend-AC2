@@ -1,0 +1,96 @@
+.full-height {
+  min-height: 100%;
+  height: 80vh;
+}
+
+.botao-verde {
+  background-color: green;
+  color: white;
+  border-color: green;
+}
+
+.invisible-color {
+  background-color: #00000000;
+  border: none;
+  color: white;
+}
+
+.card {
+  margin-bottom: 0;
+  border: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  margin-bottom: 0;
+  font-size: 1.5rem;
+}
+
+input {
+  padding: 6px 0px 6px 5px;
+}
+
+.btn-acao {
+  width: 100px;
+}
+
+.botao-verde:focus,
+.botao-verde:active {
+  box-shadow: 0 0 0 0.2rem rgba(0, 255, 0, 0.5);
+}
+
+.botao-laranja {
+  background-color: rgb(255, 120, 48);
+  color: white;
+  border-color: rgb(255, 120, 48);
+}
+
+.botao-laranja:focus,
+.botao-laranja:active {
+  box-shadow: 0 0 0 0.2rem rgb(255, 120, 48);
+}
+
+
+.cls-limit-table {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.descricao-Usuario,
+.status {
+  width: 220px;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.linha-Usuario {
+  height: 50px;
+  display: flex;
+  align-items: center;
+}
+
+td,
+th {
+  padding-left: 25px;
+}
+
+.card-body {
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+#deletarUsuario {
+  margin-left: 5px;
+}
+
+@media screen and (max-width: 991px) {
+  #deletarUsuario {
+    margin-left: 0px;
+    margin-top: 5px;
+  }
+}
