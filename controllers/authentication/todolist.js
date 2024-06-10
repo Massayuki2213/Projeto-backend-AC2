@@ -18,60 +18,63 @@ task.get('/tarefas', auth, async (req, res) => {
 });
 
 // Rota para criar uma nova tarefa
-task.post('/tarefas', auth, async (req, res) => {
-    const { descricao } = req.body;
-    const tarefa = {
-        descricao,
-        dono: req.user.id,
-    };
+task.post("/tarefas", auth, async (req, res) => {
+    const { descricao, status, dono } = req.body;
 
     try {
-        await TaskModel.create(tarefa);
-        return res.status(201).json({ mensagem: 'Tarefa criada com sucesso!' });
+        const novaTarefa = await TaskModel.create({
+            descricao: descricao,
+            status: status,
+            dono: dono // não há necessidade de definir como null, já que é opcional
+        });
+
+        return res.status(201).json({ mensagem: 'Tarefa criada com sucesso!', novaTarefa });
     } catch (error) {
-        return res.status(500).json({ error });
+        return res.status(500).json({ error: "Erro " });
     }
 });
+
+
+
 
 // Rota para editar uma tarefa específica do usuário logado
-task.put('/tarefas/:id', auth, async (req, res) => {
-    const tarefaId = req.params.id;
-    const { descricao } = req.body;
-
+task.put("/editar/:Id", auth, async (req, res) => {
+    const { id } = req.params;
+    const tarefaUpdates = req.body;
+  
     try {
-        const tarefa = await TaskModel.findOne({ _id: tarefaId, dono: req.user.id });
-        if (!tarefa) {
-            return res.status(404).json({ mensagem: 'Tarefa não encontrada' });
-        }
-
-        tarefa.descricao = descricao;
-        await tarefa.save();
-
-        return res.status(200).json({ mensagem: 'Tarefa atualizada com sucesso!' });
-    } catch (error) {
-        return res.status(500).json({ error });
+      const tarefa = await TaskModel.findOne({ id: id });
+  
+      if (!tarefa) {
+        return res.status(404).json({ mensagem: "Tarefa não encontrada" });
+      }
+  
+      await TaskModel.updateOne({ id: id }, tarefaUpdates);
+  
+      const updatedTarefa = await TaskModel.findOne({ id: id });
+  
+      return res.status(200).json(updatedTarefa);
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
     }
-});
+  });
 
 // Rota para excluir uma tarefa específica do usuário logado
-task.delete('/tarefas/:id', auth, async (req, res) => {
-    const tarefaId = req.params.id;
-
+task.delete("/:id", auth, async (req, res) => {
+    const id = req.params.id;
     try {
-        const tarefa = await TaskModel.findOne({ _id: tarefaId, dono: req.user.id });
-        if (!tarefa) {
-            return res.status(404).json({ mensagem: 'Tarefa não encontrada' });
+        const task = await TaskModel.findOneAndDelete({ _id: id });
+        if (!task) {
+            return res.status(404).json({ mensagem: "Tarefa não encontrada!" });
         }
-
-        await tarefa.remove();
-        return res.status(200).json({ mensagem: 'Tarefa removida com sucesso!' });
-    } catch (error) {
-        return res.status(500).json({ error });
+        return res.status(200).json({ mensagem: "Tarefa excluída com sucesso!" });
+    } catch (err) {
+        return res.status(500).json({ mensagem: "Erro ao excluir tarefa!" });
     }
 });
 
 // Rota para trazer as tarefas que não possuem um dono
-task.get('/tarefasSemDono', auth, async (req, res) => {
+task.get('/tarefassemdono', auth, async (req, res) => {
     try {
         const tarefas = await TaskModel.find({ dono: null });
         return res.status(200).json(tarefas);
@@ -81,21 +84,22 @@ task.get('/tarefasSemDono', auth, async (req, res) => {
 });
 
 // Rota para adicionar um dono a uma tarefa específica
-task.put('/tarefas/:id/adicionarDono', auth, async (req, res) => {
-    const tarefaId = req.params.id;
-
+task.put("/tarefas/:taskId/:userId", auth, async (req, res) => {
+    const { taskId, userId } = req.params;
     try {
-        const tarefa = await TaskModel.findById(tarefaId);
-        if (!tarefa) {
-            return res.status(404).json({ mensagem: 'Tarefa não encontrada' });
+        const task = await TaskModel.findById(taskId);
+        if (!task) {
+            return res.status(404).json({ mensagem: "Tarefa não encontrada!" });
         }
-
-        tarefa.dono = req.user.id;
-        await tarefa.save();
-
-        return res.status(200).json({ mensagem: 'Dono adicionado à tarefa com sucesso!' });
-    } catch (error) {
-        return res.status(500).json({ error });
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado!" });
+        }
+        task.userId = user._id;
+        await task.save();
+        return res.status(200).json({ mensagem: "Usuário atribuído a tarefa com sucesso!", task });
+    } catch (err) {
+        return res.status(500).json({ error: "Não foi possível atribuir o usuário à tarefa!" });
     }
 });
 

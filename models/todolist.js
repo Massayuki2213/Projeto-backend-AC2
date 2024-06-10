@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 
-const task = mongoose.model("tasks", {
-    tarefa: String,
+const taskSchema = new mongoose.Schema({
     descricao: String,
     status: String,
-    dono: String
+    dono: { type: String, required: false } // tornando o campo dono opcional
 });
+
+const task = mongoose.model("tasks", taskSchema);
 
 module.exports = task;
