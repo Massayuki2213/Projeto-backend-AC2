@@ -3,22 +3,22 @@ const jwt = require('jsonwebtoken');
 const auth = require('../../middlewares/authentication');
 const TaskModel = require('../../models/todolist'); // Certifique-se de que este caminho esteja correto
 const express = require('express');
-const todolistController = express.Router();
+const task = express.Router();
 const { v4: uuidv4 } = require('uuid');
 
 
 // Rota para listar as tarefas do usuário logado
-todolistController.get('/tarefas', auth, async (req, res) => {
+task.get('/tarefas', auth, async (req, res) => {
     try {
-        const tarefas = await TaskModel.find({ dono: req.user.id });
-        return res.status(200).json(tarefas);
+        const task = await TaskModel.find({ dono: req.user.id });
+        return res.status(200).json(task);
     } catch (error) {
         return res.status(500).json({ error });
     }
 });
 
 // Rota para criar uma nova tarefa
-todolistController.post('/tarefas', auth, async (req, res) => {
+task.post('/tarefas', auth, async (req, res) => {
     const { descricao } = req.body;
     const tarefa = {
         descricao,
@@ -34,7 +34,7 @@ todolistController.post('/tarefas', auth, async (req, res) => {
 });
 
 // Rota para editar uma tarefa específica do usuário logado
-todolistController.put('/tarefas/:id', auth, async (req, res) => {
+task.put('/tarefas/:id', auth, async (req, res) => {
     const tarefaId = req.params.id;
     const { descricao } = req.body;
 
@@ -54,7 +54,7 @@ todolistController.put('/tarefas/:id', auth, async (req, res) => {
 });
 
 // Rota para excluir uma tarefa específica do usuário logado
-todolistController.delete('/tarefas/:id', auth, async (req, res) => {
+task.delete('/tarefas/:id', auth, async (req, res) => {
     const tarefaId = req.params.id;
 
     try {
@@ -71,7 +71,7 @@ todolistController.delete('/tarefas/:id', auth, async (req, res) => {
 });
 
 // Rota para trazer as tarefas que não possuem um dono
-todolistController.get('/tarefasSemDono', auth, async (req, res) => {
+task.get('/tarefasSemDono', auth, async (req, res) => {
     try {
         const tarefas = await TaskModel.find({ dono: null });
         return res.status(200).json(tarefas);
@@ -81,7 +81,7 @@ todolistController.get('/tarefasSemDono', auth, async (req, res) => {
 });
 
 // Rota para adicionar um dono a uma tarefa específica
-todolistController.put('/tarefas/:id/adicionarDono', auth, async (req, res) => {
+task.put('/tarefas/:id/adicionarDono', auth, async (req, res) => {
     const tarefaId = req.params.id;
 
     try {
@@ -99,4 +99,4 @@ todolistController.put('/tarefas/:id/adicionarDono', auth, async (req, res) => {
     }
 });
 
-module.exports = todolistController;
+module.exports = task;
