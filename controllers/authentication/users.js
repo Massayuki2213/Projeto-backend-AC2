@@ -63,7 +63,7 @@ users.get("/users", auth, async (req, res) => {
 });
 
 // Rota para obter user por funcao
-users.get("/usuariosPorFuncao", auth, async (req, res) => {
+users.get("/usersfuncao", auth, async (req, res) => {
   try {
     const usuariosPorFuncao = await User.aggregate([
       {
@@ -102,16 +102,16 @@ users.get("/:email", auth, async (req, res) => {
   }
 });
 
-users.delete("/:idUser", auth, async (req, res) => {
-  const idUser = req.params.idUser; // Captura o idUser
+users.delete("/:id", auth, async (req, res) => {
+  const id = req.params.id; // Captura o id
   try {
-    const user = await User.findOne({ idUser: idUser });
+    const user = await User.findOne({ id: id });
 
     if (!user) {
       return res.status(404).json({ mensagem: "Usuário não encontrado" });
     }
 
-    await User.findOneAndDelete({ idUser: idUser });
+    await User.findOneAndDelete({ id: id });
 
     return res.status(200).json({ mensagem: "Usuário deletado com sucesso" });
   } catch (err) {
@@ -163,7 +163,7 @@ users.post("/cadastroUsuario", auth, async (req, res) => {
 });
 
 // Rota para editar usuario:
-users.put("/editarUsuario/:email", auth, async (req, res) => {
+users.put("/editar/:email", auth, async (req, res) => {
   const userEmail = req.params.email;
   const { nome, email, senha, funcao } = req.body;
 
